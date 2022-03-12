@@ -3,6 +3,7 @@ package com.udemy.rest.api.services.impl;
 import com.udemy.rest.api.model.User;
 import com.udemy.rest.api.repositories.UserRepository;
 import com.udemy.rest.api.services.UserService;
+import com.udemy.rest.api.services.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,8 +19,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User findById(Integer id) {
-    Optional<User> user = repository.findById(id);
-    return user.orElse(null);
+    return repository.findById(id)
+            .orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado!"));
   }
 
 }
