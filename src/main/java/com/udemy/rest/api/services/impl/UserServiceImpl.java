@@ -4,14 +4,18 @@ import com.udemy.rest.api.model.User;
 import com.udemy.rest.api.model.dto.UserDTO;
 import com.udemy.rest.api.repositories.UserRepository;
 import com.udemy.rest.api.services.UserService;
+import com.udemy.rest.api.services.exceptions.DataIntegratyViolationException;
 import com.udemy.rest.api.services.exceptions.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+  private static final String EMAIL_ALREADY_EXISTS = "O email informado já existe no sistema";
 
   private final UserRepository repository;
   private final ModelMapper mapper;
@@ -33,7 +37,13 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User create(UserDTO user) {
+    findByEmail(user);
     return repository.save(mapper.map(user, User.class));
+  }
+
+  private void findByEmail(UserDTO dto) {
+    Optional<User> user = repository.findByEmail(dto.getEmail());
+    if (user.isPresent()) throw new DataIntegratyViolationException(EMAIL_ALREADY_EXISTS);
   }
 
 }
