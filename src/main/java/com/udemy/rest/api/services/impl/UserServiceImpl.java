@@ -6,6 +6,8 @@ import com.udemy.rest.api.services.UserService;
 import com.udemy.rest.api.services.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -19,6 +21,10 @@ public class UserServiceImpl implements UserService {
   public User findById(Integer id) {
     return repository.findById(id)
             .orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado!"));
+  }
+
+  public List<User> findAll() {
+    return repository.findAll();
   }
 
 }
