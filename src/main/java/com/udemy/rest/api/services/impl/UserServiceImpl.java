@@ -16,6 +16,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
   private static final String EMAIL_ALREADY_EXISTS = "O email informado já existe no sistema";
+  public static final String OBJECT_NOT_FOUND = "Objeto não encontrado!";
 
   private final UserRepository repository;
   private final ModelMapper mapper;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public User findById(Integer id) {
     return repository.findById(id)
-            .orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado!"));
+            .orElseThrow(() -> new ObjectNotFoundException(OBJECT_NOT_FOUND));
   }
 
   public List<User> findAll() {
