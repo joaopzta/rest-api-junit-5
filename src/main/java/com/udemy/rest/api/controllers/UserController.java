@@ -45,6 +45,12 @@ public class UserController {
     return ResponseEntity.created(uri).build();
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<UserDTO> update(@PathVariable Integer id, @RequestBody UserDTO dto) {
+    var userUpdated = service.update(id, dto);
+    return ResponseEntity.ok().body(mapper.map(userUpdated, UserDTO.class));
+  }
+
   private URI getUriFromCurrentRequest(User user) {
     return ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
