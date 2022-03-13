@@ -19,17 +19,17 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Garante o funcionamento da classe UserService")
 class UserServiceTest {
 
-  public static final Integer ID                   = 1;
-  public static final String NAME                  = "Joao";
-  public static final String EMAIL                 = "joao@gmail.com";
-  public static final String PASSWORD              = "1234";
-  public static final String OBJECT_NOT_FOUND      = "Objeto não encontrado!";
+  private static final Integer ID                  = 1;
+  private static final String NAME                 = "Joao";
+  private static final String EMAIL                = "joao@gmail.com";
+  private static final String PASSWORD             = "1234";
+  private static final String OBJECT_NOT_FOUND     = "Objeto não encontrado!";
   private static final String EMAIL_ALREADY_EXISTS = "O email informado já existe no sistema";
 
   @Mock
@@ -67,11 +67,13 @@ class UserServiceTest {
   @Test
   @DisplayName("Deve lançar exceção de objeto nao encontrado")
   void must_throw_exception_when_id_doest_not_exists() {
-    given(userRepository.findById(anyInt())).willThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
+    doThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND)).when(userRepository).findById(anyInt());
 
-    var ex = assertThrows(ObjectNotFoundException.class, () -> service.findById(ID));
+    var exFind = assertThrows(ObjectNotFoundException.class, () -> service.findById(ID));
+    var exDelete = assertThrows(ObjectNotFoundException.class, () -> service.delete(ID));
 
-    assertExceptions(ObjectNotFoundException.class, ex, OBJECT_NOT_FOUND);
+    assertExceptions(ObjectNotFoundException.class, exFind, OBJECT_NOT_FOUND);
+    assertExceptions(ObjectNotFoundException.class, exDelete, OBJECT_NOT_FOUND);
   }
 
   @Test
@@ -110,6 +112,18 @@ class UserServiceTest {
     assertNotNull(response);
     assertEquals(User.class, response.getClass());
     assertFields(response);
+  }
+
+  @Test
+  @DisplayName("Deve deletar um usuário no banco")
+  void must_delete_an_user() {
+    given(userRepository.findById(anyInt())).willReturn(userOpt);
+    doNothing().when(userRepository).delete(any());
+
+    service.delete(ID);
+
+    verify(userRepository).findById(anyInt());
+    verify(userRepository).delete(any(User.class));
   }
 
   @Test
