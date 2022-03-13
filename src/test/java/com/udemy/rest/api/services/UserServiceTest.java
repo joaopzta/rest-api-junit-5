@@ -101,15 +101,32 @@ class UserServiceTest {
   }
 
   @Test
+  @DisplayName("Deve atualizar um usuário já existente")
+  void must_update_an_user() {
+    given(userRepository.save(any())).willReturn(user);
+
+    var response = service.update(ID, dto);
+
+    assertNotNull(response);
+    assertEquals(User.class, response.getClass());
+    assertFields(response);
+  }
+
+  @Test
   @DisplayName("Deve lançar exceção quando o email já existir")
   void must_throw_exception_when_email_already_exists() {
     given(userRepository.findByEmail(anyString())).willReturn(userOpt);
-    dto.setId(2);
 
-    var ex =
+    dto.setId(2);
+    var exCreate =
             assertThrows(DataIntegratyViolationException.class, () -> service.create(dto));
 
-    assertExceptions(DataIntegratyViolationException.class, ex, EMAIL_ALREADY_EXISTS);
+    userOpt.ifPresent(user -> user.setId(2));
+    var exUpdate =
+            assertThrows(DataIntegratyViolationException.class, () -> service.update(ID, dto));
+
+    assertExceptions(DataIntegratyViolationException.class, exCreate, EMAIL_ALREADY_EXISTS);
+    assertExceptions(DataIntegratyViolationException.class, exUpdate, EMAIL_ALREADY_EXISTS);
   }
 
   private <T> void assertExceptions(Class<T> type, Exception ex, String msg) {
