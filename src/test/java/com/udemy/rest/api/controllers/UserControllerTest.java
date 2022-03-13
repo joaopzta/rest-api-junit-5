@@ -12,11 +12,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Garante o funcionamento da classe UserController")
@@ -45,7 +47,8 @@ class UserControllerTest {
   }
 
   @Test
-  void must_find_user_by_id() {
+  @DisplayName("Deve retornar um usuário pelo ID com status OK")
+  void must_find_user_by_id_with_status_OK() {
     given(service.findById(anyInt())).willReturn(user);
     given(mapper.map(any(), any())).willReturn(userDTO);
 
@@ -53,9 +56,28 @@ class UserControllerTest {
 
     assertNotNull(response);
     assertNotNull(response.getBody());
+    assertEquals(OK, response.getStatusCode());
     assertEquals(ResponseEntity.class, response.getClass());
     assertEquals(UserDTO.class, response.getBody().getClass());
     assertFields(response.getBody());
+  }
+
+  @Test
+  @DisplayName("Deve retornar uma lista de usuários com status OK")
+  void must_find_all_users_with_status_OK() {
+    given(service.findAll()).willReturn(List.of(user));
+    given(mapper.map(any(), any())).willReturn(userDTO);
+
+    var response = controller.findAll();
+
+    assertNotNull(response);
+    assertNotNull(response.getBody());
+    assertFalse(response.getBody().isEmpty());
+    assertEquals(OK, response.getStatusCode());
+    assertEquals(1, response.getBody().size());
+    assertEquals(ResponseEntity.class, response.getClass());
+    assertEquals(UserDTO.class, response.getBody().get(0).getClass());
+    assertFields(response.getBody().get(0));
   }
 
   private void assertFields(UserDTO actual) {
