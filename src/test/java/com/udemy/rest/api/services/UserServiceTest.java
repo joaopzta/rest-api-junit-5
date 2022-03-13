@@ -3,7 +3,7 @@ package com.udemy.rest.api.services;
 import com.udemy.rest.api.model.User;
 import com.udemy.rest.api.model.dto.UserDTO;
 import com.udemy.rest.api.repositories.UserRepository;
-import com.udemy.rest.api.services.exceptions.DataIntegratyViolationException;
+import com.udemy.rest.api.services.exceptions.DataIntegrityViolationException;
 import com.udemy.rest.api.services.exceptions.ObjectNotFoundException;
 import com.udemy.rest.api.services.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -133,14 +133,14 @@ class UserServiceTest {
 
     dto.setId(2);
     var exCreate =
-            assertThrows(DataIntegratyViolationException.class, () -> service.create(dto));
+            assertThrows(DataIntegrityViolationException.class, () -> service.create(dto));
 
     userOpt.ifPresent(user -> user.setId(2));
     var exUpdate =
-            assertThrows(DataIntegratyViolationException.class, () -> service.update(ID, dto));
+            assertThrows(DataIntegrityViolationException.class, () -> service.update(ID, dto));
 
-    assertExceptions(DataIntegratyViolationException.class, exCreate, EMAIL_ALREADY_EXISTS);
-    assertExceptions(DataIntegratyViolationException.class, exUpdate, EMAIL_ALREADY_EXISTS);
+    assertExceptions(DataIntegrityViolationException.class, exCreate, EMAIL_ALREADY_EXISTS);
+    assertExceptions(DataIntegrityViolationException.class, exUpdate, EMAIL_ALREADY_EXISTS);
   }
 
   private <T> void assertExceptions(Class<T> type, Exception ex, String msg) {

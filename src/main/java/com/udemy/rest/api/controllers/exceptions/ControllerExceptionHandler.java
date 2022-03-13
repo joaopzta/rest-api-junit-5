@@ -1,6 +1,6 @@
 package com.udemy.rest.api.controllers.exceptions;
 
-import com.udemy.rest.api.services.exceptions.DataIntegratyViolationException;
+import com.udemy.rest.api.services.exceptions.DataIntegrityViolationException;
 import com.udemy.rest.api.services.exceptions.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class ControllerExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
-  @ExceptionHandler(DataIntegratyViolationException.class)
-  public ResponseEntity<StandartError> objectNotFound(DataIntegratyViolationException ex, HttpServletRequest request) {
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<StandartError> dataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
     var error = buildStandartError(ex.getMessage(), request.getRequestURI(), HttpStatus.BAD_REQUEST);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }

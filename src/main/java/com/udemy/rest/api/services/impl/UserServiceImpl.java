@@ -4,7 +4,7 @@ import com.udemy.rest.api.model.User;
 import com.udemy.rest.api.model.dto.UserDTO;
 import com.udemy.rest.api.repositories.UserRepository;
 import com.udemy.rest.api.services.UserService;
-import com.udemy.rest.api.services.exceptions.DataIntegratyViolationException;
+import com.udemy.rest.api.services.exceptions.DataIntegrityViolationException;
 import com.udemy.rest.api.services.exceptions.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
   private void findByEmail(UserDTO dto) {
     Optional<User> user = repository.findByEmail(dto.getEmail());
     if (user.isPresent() && !user.get().getId().equals(dto.getId()))
-      throw new DataIntegratyViolationException(EMAIL_ALREADY_EXISTS);
+      throw new DataIntegrityViolationException(EMAIL_ALREADY_EXISTS);
   }
 
 }
