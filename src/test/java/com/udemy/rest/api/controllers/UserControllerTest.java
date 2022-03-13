@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -23,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpStatus.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Garante o funcionamento da classe UserController")
@@ -103,6 +105,7 @@ class UserControllerTest {
     assertNotNull(response);
     assertNotNull(res);
     assertNull(response.getBody());
+    assertNotNull(response.getHeaders().get("Location"));
     assertEquals(CREATED, response.getStatusCode());
     assertEquals(response, res);
   }
@@ -121,6 +124,21 @@ class UserControllerTest {
     assertEquals(ResponseEntity.class, response.getClass());
     assertEquals(UserDTO.class, response.getBody().getClass());
     assertFields(response.getBody());
+  }
+
+  @Test
+  @DisplayName("Deve deletar um usuário e retornar status NO_CONTENT")
+  void must_delete_an_user_and_return_status_NO_CONTENT() {
+    doNothing().when(service).delete(anyInt());
+
+    var response = controller.delete(ID);
+
+    verify(service).delete(anyInt());
+
+    assertNotNull(response);
+    assertNull(response.getBody());
+    assertEquals(NO_CONTENT, response.getStatusCode());
+    assertEquals(ResponseEntity.class, response.getClass());
   }
 
   private void assertFields(UserDTO actual) {
